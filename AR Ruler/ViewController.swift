@@ -19,14 +19,38 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Set the view's delegate
         sceneView.delegate = self
         
-        // Show statistics such as fps and timing information
-        sceneView.showsStatistics = true
+        // help debug
+        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
         
-        // Create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touchPoint = touches.first?.location(in: sceneView) else { return }
         
-        // Set the scene to the view
-        sceneView.scene = scene
+//        let hitTestResults = sceneView.raycastQuery(from: touchPoint, allowing: .estimatedPlane, alignment: .horizontal)
+        let hitTestResults = sceneView.hitTest(touchPoint, types: .featurePoint)
+        
+        if let hitTestResult = hitTestResults.first {
+            addDot(at: hitTestResult)
+        }
+        
+    }
+    
+    private func addDot(at result: ARHitTestResult) {
+        let dotGeometry = SCNSphere(radius: 0.005)
+        
+        let material = SCNMaterial()
+        material.diffuse.contents = UIColor.red
+        dotGeometry.materials = [material]
+        
+        let dotNode = SCNNode(geometry: dotGeometry)
+        dotNode.position = SCNVector3(
+            result.localTransform.columns.3.x,
+            result.localTransform.columns.3.y,
+            result.localTransform.columns.3.z
+        )
+        
+        sceneView.scene.rootNode.addChildNode(dotNode)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -46,29 +70,4 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.pause()
     }
 
-    // MARK: - ARSCNViewDelegate
-    
-/*
-    // Override to create and configure nodes for anchors added to the view's session.
-    func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
-        let node = SCNNode()
-     
-        return node
-    }
-*/
-    
-    func session(_ session: ARSession, didFailWithError error: Error) {
-        // Present an error message to the user
-        
-    }
-    
-    func sessionWasInterrupted(_ session: ARSession) {
-        // Inform the user that the session has been interrupted, for example, by presenting an overlay
-        
-    }
-    
-    func sessionInterruptionEnded(_ session: ARSession) {
-        // Reset tracking and/or remove existing anchors if consistent tracking is required
-        
-    }
 }
