@@ -45,9 +45,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         let dotNode = SCNNode(geometry: dotGeometry)
         dotNode.position = SCNVector3(
-            result.localTransform.columns.3.x,
-            result.localTransform.columns.3.y,
-            result.localTransform.columns.3.z
+            result.worldTransform.columns.3.x,
+            result.worldTransform.columns.3.y,
+            result.worldTransform.columns.3.z
         )
         
         sceneView.scene.rootNode.addChildNode(dotNode)
