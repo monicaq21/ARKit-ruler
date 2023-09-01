@@ -14,6 +14,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet var sceneView: ARSCNView!
     
     var dotNodes = [SCNNode]()
+    var textNode = SCNNode()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +28,18 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        // on third tap, clear the dots
+        if dotNodes.count >= 2 {
+            for dotNode in dotNodes {
+                dotNode.removeFromParentNode()
+            }
+            textNode.removeFromParentNode()
+            dotNodes = [SCNNode]()
+            textNode = SCNNode()
+            return
+        }
+        
         guard let touchPoint = touches.first?.location(in: sceneView) else { return }
         
 //        let hitTestResults = sceneView.raycastQuery(from: touchPoint, allowing: .estimatedPlane, alignment: .horizontal) xxx
@@ -82,6 +95,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         textNode.position = SCNVector3(position.x, position.y, position.z)
         textNode.scale = SCNVector3(0.01, 0.01, 0.01) // reduces text size to 1% of original size
         
+        self.textNode = textNode
         sceneView.scene.rootNode.addChildNode(textNode)
     }
     
