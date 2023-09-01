@@ -13,6 +13,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     
+    var dotNodes = [SCNNode]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -27,7 +29,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touchPoint = touches.first?.location(in: sceneView) else { return }
         
-//        let hitTestResults = sceneView.raycastQuery(from: touchPoint, allowing: .estimatedPlane, alignment: .horizontal)
+//        let hitTestResults = sceneView.raycastQuery(from: touchPoint, allowing: .estimatedPlane, alignment: .horizontal) xxx
         let hitTestResults = sceneView.hitTest(touchPoint, types: .featurePoint)
         
         if let hitTestResult = hitTestResults.first {
@@ -51,6 +53,25 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         )
         
         sceneView.scene.rootNode.addChildNode(dotNode)
+        
+        dotNodes.append(dotNode)
+        if dotNodes.count >= 2 {
+            calculate()
+        }
+    }
+    
+    private func calculate() {
+        assert(dotNodes.count >= 2)
+        let start = dotNodes[0]
+        let end = dotNodes[1]
+        
+        let dist_x = start.position.x - end.position.x
+        let dist_y = start.position.y - end.position.y
+        let dist_z = start.position.z - end.position.z
+        
+        let distance = sqrt(pow(dist_x, 2) + pow(dist_y, 2) + pow(dist_z, 2))
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
